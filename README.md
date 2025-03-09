@@ -1,3 +1,21 @@
+## Devops
+
+![alt text](image-181.png)
+
+  - Linux administration (RHCSA prefered)
+  - Network basic knowledge
+  - Virtualization (vmware vsphere prefered)
+  - SDLC (software development life cycle) just the concept at the beginning
+  - git
+  - CI/CD tool (Jenkins or azure devops or github actions ...etc)
+  - Docker & Docker compose
+  - kubernetes
+  - Ansible
+  - Terraform
+  - Cloud(AWS, Azure, Google, ...)
+  - Monitring (Prometheus and Grafana)
+
+
 ## Docker
 
 Docker is the most popular containerization technology. Containerization addresses the problem of *"It works on my machine"* by packaging an **application** with its **environment** as an image.
