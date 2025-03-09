@@ -70,6 +70,7 @@ Docker is the most popular containerization technology. Containerization address
   - Networks
   - Containers
   - Volumes
+  
 ![alt text](image-9.png)
 - **Registry:** is the place that hold the images (dockerhub, ECR, ...)
 ![alt text](image-10.png)
@@ -699,8 +700,184 @@ sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
 13a951f178834ab3a55f1a2f1c48a52bc243989fbd1577a2c9b80cde0e11fcd6
 [root@jenkins dockertomcat]#
 
+[root@jenkins dockertomcat]# docker tag centos7_from_commit_conatiner:v1 haytham1992/centos7_from_commit_conatiner:v1
+[root@jenkins dockertomcat]# docker push haytham1992/centos7_from_commit_conatiner:v1
 
 ```
+
+**Build Contexts:**
+
+
+![alt text](image-87.png)
+![alt text](image-89.png)
+![alt text](image-90.png)
+![alt text](image-91.png)
+![alt text](image-92.png)
+
+
+**Build Cache:**
+
+![alt text](image-93.png)
+![alt text](image-94.png)
+![alt text](image-95.png)
+![alt text](image-96.png)
+![alt text](image-97.png)
+![alt text](image-98.png)
+![alt text](image-99.png)
+![alt text](image-100.png)
+![alt text](image-101.png)
+![alt text](image-102.png)
+![alt text](image-103.png)
+![alt text](image-104.png)
+
+**COPY vs ADD:**
+
+ - Best practice is to use COPY not ADD why? as copy save layers than add 
+
+![alt text](image-105.png)
+![alt text](image-106.png)
+
+**CMD vs Entrypoint:**
+
+![alt text](image-107.png)
+
+![alt text](image-108.png)
+
+![alt text](image-109.png)
+
+![alt text](image-110.png)
+
+![alt text](image-111.png)
+
+![alt text](image-112.png)
+
+![alt text](image-113.png)
+
+![alt text](image-114.png)
+
+![alt text](image-115.png)
+
+![alt text](image-116.png)
+
+![alt text](image-117.png)
+
+![alt text](image-118.png)
+
+**Base vs Parent Image:**
+
+![alt text](image-119.png)
+![alt text](image-120.png)
+![alt text](image-121.png)
+![alt text](image-122.png)
+![alt text](image-123.png)
+![alt text](image-124.png)
+
+**Multi-Stage Builds:**
+
+![alt text](image-125.png)
+
+![alt text](image-126.png)
+
+![alt text](image-127.png)
+
+![alt text](image-128.png)
+
+![alt text](image-129.png)
+
+![alt text](image-130.png)
+
+![alt text](image-131.png)
+
+![alt text](image-132.png)
+
+![alt text](image-133.png)
+
+![alt text](image-134.png)
+
+![alt text](image-135.png)
+
+**Dockerfile - Best Practices:**
+
+![alt text](image-136.png)
+
+![alt text](image-137.png)
+
+![alt text](image-138.png)
+
+![alt text](image-139.png)
+
+**Docker Daemon Security:**
+
+![alt text](image-140.png)
+
+![alt text](image-141.png)
+
+![alt text](image-142.png)
+
+![alt text](image-143.png)
+
+![alt text](image-144.png)
+
+![alt text](image-145.png)
+
+![alt text](image-146.png)
+
+![alt text](image-147.png)
+
+**Namespaces and Capabilities:**
+
+![alt text](image-148.png)
+![alt text](image-149.png)
+![alt text](image-150.png)
+![alt text](image-151.png)
+![alt text](image-152.png)
+![alt text](image-153.png)
+![alt text](image-154.png)
+![alt text](image-155.png)
+
+![alt text](image-156.png)
+
+![alt text](image-157.png)
+![alt text](image-158.png)
+![alt text](image-159.png)
+![alt text](image-160.png)
+
+**CGroups:**
+
+![alt text](image-161.png)
+![alt text](image-162.png)
+
+![alt text](image-163.png)
+![alt text](image-164.png)
+
+![alt text](image-165.png)
+![alt text](image-166.png)
+
+![alt text](image-167.png)
+![alt text](image-168.png)
+![alt text](image-169.png)
+![alt text](image-170.png)
+
+**Resource Limits Memory:**
+
+![alt text](image-171.png)
+![alt text](image-172.png)
+![alt text](image-173.png)
+
+**Demo - Resource Limits:**
+![alt text](image-174.png)
+![alt text](image-175.png)
+![alt text](image-176.png)
+![alt text](image-177.png)
+![alt text](image-178.png)
+![alt text](image-179.png)
+
+
+**Docker Network:**
+
+**Docker Storage:**
+
+**Docker Compose:**
 
 ## Resources
 
