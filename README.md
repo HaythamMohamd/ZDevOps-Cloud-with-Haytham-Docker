@@ -2,7 +2,7 @@
 
 Here Devops Roadmap post at Linkedin [DevOps_Roadmap](https://www.linkedin.com/posts/haythamm3wadallah_haythamabrdevopsabr101-aehafeaesaetafaabraeyafaaeuaesaepafcaehabraeqaev-activity-7069259330746728448-EUHU/?utm_source=share&utm_medium=member_ios):
 
-![alt text](image-181.png)
+![alt text](image-182.png)
 
   - Linux administration (RHCSA prefered)
   - Network basic knowledge
