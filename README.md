@@ -41,8 +41,8 @@ Docker is the most popular containerization technology. Containerization address
 
   ```
 
-
 ### Docker Engine Architecture
+
 ![alt text](image-4.png)
 
 - **docker cli:** for command line
@@ -53,7 +53,7 @@ Docker is the most popular containerization technology. Containerization address
   - CGroups
 - **LibContainer:** writen in go language , and docker dealed with kernel directly
 ![alt text](image-1.png)
-- **LibContainer replaced LXC:** 
+- **LibContainer replaced LXC:**
 - **OCI:** provides some standard for creation images and containers
 ![alt text](image-3.png)
 - **Docker Daemon:** responsible for create and manage objects (images, containers, networks and volumes)
@@ -65,11 +65,11 @@ Docker is the most popular containerization technology. Containerization address
 
 - **what will happen if docker is down?:** all things will be down,to fix this point the containerd-shim process is here,so if daemon is down,the containers will be running
 ![alt text](image-8.png)
-- **docker objects:** 
+- **docker objects:**
   - Images
   - Networks
   - Containers
-  - Volumes 
+  - Volumes
 ![alt text](image-9.png)
 - **Registry:** is the place that hold the images (dockerhub, ECR, ...)
 ![alt text](image-10.png)
@@ -77,12 +77,13 @@ Docker Service Configuration
   - Docker CLI: run the command for example `docker container run -it ubuntu`
   - REST API: the command will go as API to Docker Daemon
   - Docker Daemon: will search about the image local and if not found will download from DockerHub as this is the default, then call containerd
-  - Containerd: will create the container and send to container-shim 
+  - Containerd: will create the container and send to container-shim
   - Container-shim: will manage the container and send to runC
-  - runC: will contact with kernel for Namespace and CGroup 
+  - runC: will contact with kernel for Namespace and CGroup
 ![alt text](image-11.png)
 
 **Docker Service Configuration:**
+
 ```bash
 systemctl start docker
 systemctl stop docker
@@ -92,6 +93,7 @@ dockerd
 dockerd --debug 
 dockerd --debug --host=tcp://192.168.1.10:2375
 ```
+
 ![alt text](image-12.png)
 ![alt text](image-13.png)
 ![alt text](image-14.png)
@@ -102,6 +104,7 @@ dockerd --debug --host=tcp://192.168.1.10:2375
 ![alt text](image-19.png)
 
 **Basic Container Operations:**
+
 ```bash
 docker container run -it ubuntu
 docker image build .
@@ -132,21 +135,23 @@ docker container ls
 docker container run httpd
 
 ```
+
 ![alt text](image-20.png)
 
-**Container process:** the idea for container to ececute one task and then die, so you should run continous one 
+**Container process:** the idea for container to ececute one task and then die, so you should run continous one
 
 ![alt text](image-21.png)
 ![alt text](image-22.png)
 
 **create container with name and rename it:**
+
 ```bash
 docker container run -itd  --name=webapp httpd
 docker container rename webapp new-webapp
 ```
 
-
 **Interacting with a Running Container:**
+
 ```bash
 docker container run -itd  --name=webapp httpd
 docker container ls -l
@@ -156,6 +161,7 @@ docker container exec 1115ddd hostname
 ```
 
 **Inspecting a Container:**
+
 ```bash
 docker inspect 2867e561c297
 docker container stats
@@ -168,6 +174,7 @@ docker system events  --since 10m
 ```
 
 **Stopping and Removing a Container:**
+
 ```bash
 docker container run --name web httpd
 docker container pause web
@@ -185,6 +192,7 @@ alias boom='docker container stop $(docker container ls -q); docker container rm
 docker container prune
 
 ```
+
 ![alt text](image-23.png)
 ![alt text](image-24.png)
 ![alt text](image-25.png)
@@ -194,6 +202,7 @@ docker container prune
 ![alt text](image-29.png)
 
 **Setting a Container Hostname:**
+
 ```bash
 [root@jenkins ~]# docker container run -it --name ubuntu  ubuntu
 root@c946d8540af2:/# hostname
@@ -205,22 +214,26 @@ ubuntu
 ```
 
 **Restart Policies:** you will use `--retart=(no, on-failure, always, unless stopped)`
-  - no: means no automatic restart 
-  - on-failure: if exit code is 1 will restart 
-  - always: will restart container if exit code is 0 or 1 
-  - unless stopped: like always but if you start manual will not restart automatic
+
+- no: means no automatic restart
+- on-failure: if exit code is 1 will restart
+- always: will restart container if exit code is 0 or 1
+- unless stopped: like always but if you start manual will not restart automatic
+
 ```bash
 docker container run --restart=no ubuntu
 docker container run --restart=on-failure ubuntu
 docker container run --restart=always ubuntu
 docker container run --restart=unless-stopped ubuntu
 ```
+
 ![alt text](image-30.png)
 
-**Live restore:**: if you stop docker all the containers will be down so put this `"live-restore":true`in `/etc/docker/daemon.json` 
+**Live restore:**: if you stop docker all the containers will be down so put this `"live-restore":true`in `/etc/docker/daemon.json`
 ![alt text](image-31.png)
 
-**Copying Contents into Container:** 
+**Copying Contents into Container:**
+
 ```bash
 [root@jenkins docker_kodekloud]#   docker container run -itd --name ubuntu  ubuntu
 be70fee232f82a224e20a8ce12497191b00a3132aed4dbc7e4c9f3687fc9ffe0
@@ -231,10 +244,11 @@ Successfully copied 2.05kB to ubuntu:/tmp
 index.html
 
 ```
+
 ![alt text](image-32.png)
 ![alt text](image-33.png)
 
-**Publishing Ports:** 
+**Publishing Ports:**
 
 ![alt text](image-34.png)
 ![alt text](image-35.png)
@@ -247,11 +261,13 @@ index.html
 ![alt text](image-42.png)
 ![alt text](image-43.png)
 
-**Demo - Docker Container Operations Continued:** 
-  - run and stop container
-  - restart Policies
-  - system events 
-  - port mapping 
+**Demo - Docker Container Operations Continued:**
+
+- run and stop container
+- restart Policies
+- system events
+- port mapping
+
 ```bash
 docker container run -itd --name kodekloud --rm ubuntu
 docker ps -a
@@ -374,28 +390,32 @@ CONTAINER ID   IMAGE     COMMAND              CREATED         STATUS            
 
 ```
 
-**Troubleshooting Docker Daemon:** 
+**Troubleshooting Docker Daemon:**
+
 - if you got this error
 
 ![alt text](image-52.png)
 
-  - you should understand difference between http and https 
+- you should understand difference between http and https
 
   ![alt text](image-59.png)
   ![alt text](image-60.png)
-  - check logs
+
+- check logs
 
 ![alt text](image-55.png)  ![alt text](image-53.png)
 ![alt text](image-56.png)
-  - check daemon config file 
+
+- check daemon config file
 
   ![alt text](image-57.png)
-  - check free disk space on host 
+
+- check free disk space on host
 
   ![alt text](image-58.png)
 
+**Demo - Docker Debug Mode:**
 
-**Demo - Docker Debug Mode:** 
 ```bash
 
 [root@jenkins docker_kodekloud]# docker system info | grep -i Debug
@@ -409,7 +429,8 @@ CONTAINER ID   IMAGE     COMMAND              CREATED         STATUS            
 systemctl daemon-reload
 ```
 
-**Loging drivers:** 
+**Loging drivers:**
+
 ```bash
 [root@jenkins docker_kodekloud]# docker run -d --name nginx nginx
 [root@jenkins docker_kodekloud]# docker logs nginx
@@ -421,15 +442,266 @@ systemctl daemon-reload
 [root@jenkins containers]# cat 5cf5d10c6abb0f8f79cb3469a0b9571f3f8aadd1c60056e26af523efc14e06d7/5cf5d10c6abb0f8f79cb3469a0b9571f3f8aadd1c60056e26af523efc14e06d7-json.log
 
 ```
+
 ![alt text](image-61.png)
 
 ![alt text](image-62.png)
-- if you want to change to aws logs 
+
+- if you want to change to aws logs
 
 ![alt text](image-63.png)
+
 - log drivers options
 
 ![alt text](image-64.png)
+
+**Docker Image Registry:**
+
+```bash
+docker run ubuntu
+docker run ubuntu:latest
+docker run ubuntu:18.04
+docker run ubuntu:trusty
+
+docker images ls
+
+docker search httpd
+docker search httpd --limit 2
+docker search --filter stars=10 httpd 
+
+docker image pull httpd
+docker image list 
+```
+
+**Image Addressing Convention:**
+
+![alt text](image-65.png)
+
+**Authenticating to Registries:**
+
+![alt text](image-66.png)
+![alt text](image-67.png)
+![alt text](image-68.png)
+![alt text](image-69.png)
+
+**Removing a Docker Image:**
+
+![alt text](image-70.png)
+![alt text](image-71.png)
+![alt text](image-72.png)
+
+**Inspecting a Docker Image:**
+
+![alt text](image-73.png)
+![alt text](image-74.png)
+![alt text](image-75.png)
+
+**Save and Load Images:**
+
+![alt text](image-76.png)
+![alt text](image-77.png)
+![alt text](image-78.png)
+
+**Demo - Image Registry and Operations:**
+
+```bash
+[root@jenkins containers]# docker search httpd
+NAME                     DESCRIPTION                                     STARS     OFFICIAL
+httpd                    The Apache HTTP Server Project                  4841      [OK]
+manageiq/httpd           Container with httpd, built on CentOS for Ma…   1
+paketobuildpacks/httpd                                                   0
+vulhub/httpd                                                             0
+openquantumsafe/httpd    Demo of post-quantum cryptography in Apache …   17
+openeuler/httpd                                                          0
+dockerpinata/httpd                                                       1
+e2eteam/httpd                                                            0
+manasip/httpd                                                            0
+centos/httpd                                                             36
+
+[root@jenkins containers]# docker search httpd --limit 3
+NAME                     DESCRIPTION                                     STARS     OFFICIAL
+httpd                    The Apache HTTP Server Project                  4841      [OK]
+manageiq/httpd           Container with httpd, built on CentOS for Ma…   1
+paketobuildpacks/httpd                                                   0
+
+
+[root@jenkins containers]# docker search --filter stars=10 httpd
+NAME                    DESCRIPTION                                     STARS     OFFICIAL
+httpd                   The Apache HTTP Server Project                  4841      [OK]
+openquantumsafe/httpd   Demo of post-quantum cryptography in Apache …   17
+centos/httpd                                                            36
+arm32v7/httpd           The Apache HTTP Server Project                  11
+arm64v8/httpd           The Apache HTTP Server Project                  11
+
+[root@jenkins containers]# docker search --filter  is-official=true httpd
+NAME      DESCRIPTION                      STARS     OFFICIAL
+httpd     The Apache HTTP Server Project   4841      [OK]
+
+docker pull httpd
+docker pull httpd:alpine
+
+# tag
+docker tag httpd:apline httpd:kodekloudv1
+
+# check size of images
+docker system df
+
+# tag and push
+[root@jenkins containers]# docker tag ubuntu:latest haytham1992/java-maven:ubuntu
+[root@jenkins containers]# docker push haytham1992/java-maven:ubuntu
+
+# rm
+docker rm httpd:alpine
+
+# save and load
+[root@jenkins containers]# docker image save httpd:latest -o haytham.tar
+[root@jenkins containers]# docker image load -i haytham.tar
+
+# to get layers
+[root@jenkins containers]# docker image history ubuntu:latest
+IMAGE          CREATED       CREATED BY                                      SIZE      COMMENT
+a04dc4851cbc   5 weeks ago   /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B
+<missing>      5 weeks ago   /bin/sh -c #(nop) ADD file:6df775300d76441aa…   78.1MB
+<missing>      5 weeks ago   /bin/sh -c #(nop)  LABEL org.opencontainers.…   0B
+<missing>      5 weeks ago   /bin/sh -c #(nop)  LABEL org.opencontainers.…   0B
+<missing>      5 weeks ago   /bin/sh -c #(nop)  ARG LAUNCHPAD_BUILD_ARCH     0B
+<missing>      5 weeks ago   /bin/sh -c #(nop)  ARG RELEASE                  0B
+
+# export from container to image then import
+[root@jenkins containers]# docker run -d --name nginx nginx
+a284951e77bfb10d792373fd583d33a113f8454499fe20b8d3cc2693598bd9d7
+[root@jenkins containers]#
+[root@jenkins containers]# docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES
+a284951e77bf   nginx     "/docker-entrypoint.…"   13 seconds ago   Up 12 seconds   80/tcp    nginx
+[root@jenkins containers]# docker  export nginx > haytham.tar
+[root@jenkins containers]# ls
+haytham.tar
+[root@jenkins containers]# docker image import haytham.tar haytham:latest
+sha256:9cca021d25fdee6299c48c8d7859eebde40d9e28f8f4da5faf80b1ec5502ec03
+[root@jenkins containers]# docker images | grep -i hay
+haytham                          latest             9cca021d25fd   12 seconds ago   190MB
+
+```
+
+**Building a custom image:**
+
+![alt text](image-79.png)
+![alt text](image-80.png)
+![alt text](image-81.png)
+![alt text](image-82.png)
+![alt text](image-83.png)
+![alt text](image-84.png)
+
+**Demo - Build HTTPD image:**
+
+```bash
+mkdir httpd_project ; cd mkdir httpd_project
+[root@jenkins httpd_project]# echo "<h1>Hello from Dockerfile </h1>" > index.html
+
+
+[root@jenkins httpd_project]# cat > Dockerfile
+FROM centos:7
+
+# Fix repository URLs
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*.repo && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo
+
+# Update and install httpd
+RUN yum -y update && \
+    yum -y install httpd
+
+# Copy custom index.html
+COPY ./index.html /var/www/html/index.html
+
+# Expose port 80
+EXPOSE 80
+
+# Start httpd service
+CMD ["httpd", "-D", "FOREGROUND"]
+
+[root@jenkins httpd_project]# docker image history haytham1992/test_httpd:v1
+IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+bbeaa72995f0   52 seconds ago   CMD ["httpd" "-D" "FOREGROUND"]                 0B        buildkit.dockerfile.v0
+<missing>      52 seconds ago   EXPOSE map[80/tcp:{}]                           0B        buildkit.dockerfile.v0
+<missing>      52 seconds ago   COPY ./index.html /var/www/html/index.html #…   32B       buildkit.dockerfile.v0
+<missing>      52 seconds ago   RUN /bin/sh -c yum -y update &&     yum -y i…   428MB     buildkit.dockerfile.v0
+<missing>      2 minutes ago    RUN /bin/sh -c sed -i 's/mirrorlist/#mirrorl…   15kB      buildkit.dockerfile.v0
+<missing>      3 years ago      /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B
+<missing>      3 years ago      /bin/sh -c #(nop)  LABEL org.label-schema.sc…   0B
+<missing>      3 years ago      /bin/sh -c #(nop) ADD file:b3ebbe8bd304723d4…   204MB
+
+
+[root@jenkins httpd_project]# docker run -itd --name haytham -p 82:80 haytham1992/test_httpd:v1
+[root@jenkins httpd_project]# docker push haytham1992/test_httpd:v1
+
+```
+
+**Demo - Build Tomcat image:**
+
+```bash
+git clone https://github.com/yogeshraheja/dockertomcat.git
+cd dockertomcat/
+
+[root@jenkins dockertomcat]# cat Dockerfile
+FROM centos:7
+# Fix repository URLs
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*.repo && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo
+ARG tomcat_version=8.5.6
+RUN  yum install -y epel-release java-1.8.0-openjdk.x86_64 wget
+RUN groupadd tomcat && mkdir /opt/tomcat
+RUN useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat
+WORKDIR /
+RUN wget https://archive.apache.org/dist/tomcat/tomcat-8/v$tomcat_version/bin/apache-tomcat-$tomcat_version.tar.gz
+RUN tar -zxvf apache-tomcat-$tomcat_version.tar.gz -C /opt/tomcat --strip-components=1
+RUN cd /opt/tomcat && chgrp -R tomcat conf
+RUN chmod g+rwx /opt/tomcat/conf && chmod g+r /opt/tomcat/conf/*
+RUN chown -R tomcat /opt/tomcat/logs/ /opt/tomcat/temp /opt/tomcat/webapps /opt/tomcat/work
+RUN chgrp -R tomcat /opt/tomcat/bin && chgrp -R tomcat /opt/tomcat/lib && chmod g+rwx /opt/tomcat/bin && chmod g+r /opt/tomcat/bin/*
+WORKDIR /opt/tomcat/webapps
+RUN wget https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war
+EXPOSE 8080
+CMD ["/opt/tomcat/bin/catalina.sh","run"]
+
+docker build -t haytham1992/test_tomcat:v1 .
+docker run -itd --name haytham_tomcat_v1 -p 85:8080 haytham1992/test_tomcat:v1
+
+docker build -t haytham1992/test_tomcat:v2 --build-arg tomcat_version=8.5.8 .
+docker run -itd --name haytham_tomcat_v2 -p 90:8080 haytham1992/test_tomcat:v2
+
+```
+
+**Docker commit method:**
+
+![alt text](image-85.png)
+![alt text](image-86.png)
+
+**Demo - Image Creation Docker Commit Method:**
+
+```bash
+[root@jenkins dockertomcat]# docker pull  centos:7
+[root@jenkins dockertomcat]# docker container create -it --name centos7 centos:7
+[root@jenkins dockertomcat]# docker container start centos7
+[root@jenkins dockertomcat]# docker exec -it centos7 /bin/bash
+[root@8f660e078173 /]# sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*.repo 
+[root@8f660e078173 /]# sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' etc/yum.repos.d/CentOS-*.repo
+[root@8f660e078173 /]# yum install -y httpd
+[root@8f660e078173 /]# echo "hello from kodekloud" > /var/www/html/index.html
+[root@8f660e078173 /]# exit 
+
+[root@jenkins dockertomcat]# docker container stop centos7
+centos7
+# -a ==> author and -c ==> the commad for docker file , centos7 ==> is the name of container centos7_from_commit_conatiner:v1 => the new image name 
+[root@jenkins dockertomcat]# docker container commit -a "Haytham Awadallah" -c 'CMD ["httpd","-D","FOREGROUND"]' centos7 centos7_from_commit_conatiner:v1
+sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
+[root@jenkins dockertomcat]# docker container run -itd --name commit-container -p 80:80 centos7_from_commit_conatiner:v1
+13a951f178834ab3a55f1a2f1c48a52bc243989fbd1577a2c9b80cde0e11fcd6
+[root@jenkins dockertomcat]#
+
+
+```
+
 ## Resources
 
-- kodeKloud: https://learn.kodekloud.com/user/courses/docker-certified-associate-exam-course
+- kodeKloud: <https://learn.kodekloud.com/user/courses/docker-certified-associate-exam-course>
