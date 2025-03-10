@@ -4,19 +4,18 @@ Here Devops Roadmap post at Linkedin [DevOps_Roadmap](https://www.linkedin.com/p
 
 ![alt text](image-182.png)
 
-  - Linux administration (RHCSA prefered)
-  - Network basic knowledge
-  - Virtualization (vmware vsphere prefered)
-  - SDLC (software development life cycle) just the concept at the beginning
-  - git
-  - CI/CD tool (Jenkins or azure devops or github actions ...etc)
-  - Docker & Docker compose
-  - kubernetes
-  - Ansible
-  - Terraform
-  - Cloud(AWS, Azure, Google, ...)
-  - Monitring (Prometheus and Grafana)
-
+- Linux administration (RHCSA prefered)
+- Network basic knowledge
+- Virtualization (vmware vsphere prefered)
+- SDLC (software development life cycle) just the concept at the beginning
+- git
+- CI/CD tool (Jenkins or azure devops or github actions ...etc)
+- Docker & Docker compose
+- kubernetes
+- Ansible
+- Terraform
+- Cloud(AWS, Azure, Google, ...)
+- Monitring (Prometheus and Grafana)
 
 ## Docker
 
@@ -92,6 +91,7 @@ Docker is the most popular containerization technology. Containerization address
   - Volumes
   
 ![alt text](image-9.png)
+
 - **Registry:** is the place that hold the images (dockerhub, ECR, ...)
 ![alt text](image-10.png)
 Docker Service Configuration
@@ -727,13 +727,11 @@ sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
 
 **Build Contexts:**
 
-
 ![alt text](image-87.png)
 ![alt text](image-89.png)
 ![alt text](image-90.png)
 ![alt text](image-91.png)
 ![alt text](image-92.png)
-
 
 **Build Cache:**
 
@@ -752,7 +750,7 @@ sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
 
 **COPY vs ADD:**
 
- - Best practice is to use COPY not ADD why? as copy save layers than add 
+- Best practice is to use COPY not ADD why? as copy save layers than add
 
 ![alt text](image-105.png)
 ![alt text](image-106.png)
@@ -893,11 +891,12 @@ sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
 ![alt text](image-178.png)
 ![alt text](image-179.png)
 
-
 **Docker Network:**
-  - create network bridge type
-  - cteate two containers in this network 
-  - test ping each other 
+
+- create network bridge type
+- cteate two containers in this network
+- test ping each other
+
 ```bash
 [root@jenkins docker_kodekloud]# docker network create --driver bridge --subnet 192.168.1.0/24 test_network
 0d6ff82a83c8656db6be93293aba776ac29f9760923ad00eebd61bf4629f6836
@@ -966,6 +965,7 @@ test_network
 ```
 
 **Networking Deep Dive - Namespaces:**
+
 ```bash
 [root@jenkins ~]# ip netns add red
 [root@jenkins ~]# ip netns add blue
@@ -1168,10 +1168,191 @@ PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 
 ![alt text](image-211.png)
 
-
 **Networking Deep Dive - Docker:**
 
+```bash
+docker run --network none nginx
+docker run --network host nginx
+docker run --network bridge nginx  == docker run  nginx
+
+```
+
+![alt text](image-212.png)
+
+![alt text](image-213.png)
+
+![alt text](image-214.png)
+
+![alt text](image-215.png)
+
+![alt text](image-216.png)
+
+![alt text](image-217.png)
+
+![alt text](image-218.png)
+
+![alt text](image-219.png)
+
+![alt text](image-220.png)
+
+![alt text](image-221.png)
+
+![alt text](image-222.png)
+
+![alt text](image-223.png)
+
+![alt text](image-224.png)
+
+![alt text](image-225.png)
+
 **Docker Storage:**
+
+```bash
+[root@jenkins ~]# docker volume  ls
+DRIVER    VOLUME NAME
+[root@jenkins ~]#
+[root@jenkins ~]# docker volume  create testvol
+testvol
+[root@jenkins ~]# docker volume  ls
+DRIVER    VOLUME NAME
+local     testvol
+[root@jenkins ~]# docker container run -itd --name test -v testvol:/inside_container centos:7
+15f1da7f4386a5afad98cb87780569e2509b8fcc3b4377dcdf2c841cc87c88c6
+[root@jenkins ~]# docker volume ls
+DRIVER    VOLUME NAME
+local     testvol
+[root@jenkins ~]# docker exec -it test /bin/bash
+[root@15f1da7f4386 /]# ls /inside_container/
+[root@15f1da7f4386 /]# touch inside_container/from_container
+[root@15f1da7f4386 /]# ls /inside_container/
+from_container
+[root@15f1da7f4386 /]# df -h | grep -i insi
+/dev/mapper/cl_192-root   46G   18G   28G  39% /inside_container
+[root@15f1da7f4386 /]# exit
+exit
+[root@jenkins ~]# docker volume ls
+DRIVER    VOLUME NAME
+local     testvol
+[root@jenkins ~]# docker volume  inspect testvol
+[
+    {
+        "CreatedAt": "2025-03-10T14:31:08+02:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/testvol/_data",
+        "Name": "testvol",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+[root@jenkins ~]# ls /var/lib/docker/volumes/testvol/_data
+from_container
+[root@jenkins ~]# touch /var/lib/docker/volumes/testvol/_data/form_host
+[root@jenkins ~]#
+[root@jenkins ~]# docker exec -it test /bin/bash
+[root@15f1da7f4386 /]# ls /inside_container/
+form_host  from_container
+[root@15f1da7f4386 /]#
+
+
+# delete container and create another one with binding method
+[root@jenkins ~]# docker stop test
+test
+[root@jenkins ~]#
+[root@jenkins ~]# docker rm test
+test
+[root@jenkins ~]# docker container run -itd --name test-again --mount source=testvol,destination=/inside_container centos:7
+c5ffa0757a60e595d998b3b5caabf1982abdd81aae743b64b26862a82119d932
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# ls -ltr /var/lib/docker/volumes/testvol/_data
+total 0
+-rw-r--r-- 1 root root 0 Mar 10 14:33 from_container
+-rw-r--r-- 1 root root 0 Mar 10 14:34 form_host
+[root@jenkins ~]#
+# you will find same data
+[root@jenkins ~]# docker exec -it test-again ls /inside_container
+form_host  from_container
+
+# if you tried to delete the volume , will refuse as another container using it, so stop container first then delete
+[root@jenkins ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND       CREATED         STATUS         PORTS     NAMES
+c5ffa0757a60   centos:7   "/bin/bash"   3 minutes ago   Up 3 minutes             test-again
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# docker volume rm testvol
+Error response from daemon: remove testvol: volume is in use - [c5ffa0757a60e595d998b3b5caabf1982abdd81aae743b64b26862a82119d932]
+[root@jenkins ~]# docker stop test-again ; docker rm test-again
+test-again
+test-again
+[root@jenkins ~]#
+[root@jenkins ~]# docker volume rm testvol
+testvol
+[root@jenkins ~]# docker volume ls
+DRIVER    VOLUME NAME
+[root@jenkins ~]# docker volume prune
+WARNING! This will remove anonymous local volumes not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Total reclaimed space: 0B
+[root@jenkins ~]#
+
+# default for creating a volume is read write 
+[root@jenkins ~]# docker container run -itd --name volumerw --mount source=data_vol,destination=/inside_container centos:7
+1db8d4ee200a396e2293bbe55fcc355f771de717c7d13044ba77953712c07885
+[root@jenkins ~]#
+[root@jenkins ~]# docker volume ls
+DRIVER    VOLUME NAME
+local     data_vol
+
+[root@jenkins ~]# docker inspect volumerw
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "data_vol",
+                "Source": "/var/lib/docker/volumes/data_vol/_data",
+                "Destination": "/inside_container",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,  ## <<<>>>
+                "Propagation": ""
+            }
+        ],
+
+# here to create a read only conatiner to access volume (volumero)
+[root@jenkins ~]# docker container run -itd --name volumero --mount source=data_vol,destination=/inside_container,readonly centos:7
+aed88e3407ffe38e746c7897d39e945b19a76e0b0946c69fffabd48eed2dab1e
+[root@jenkins ~]# docker inspect volumero
+
+            "Mounts": [
+                {
+                    "Type": "volume",
+                    "Source": "data_vol",
+                    "Target": "/inside_container",
+                    "ReadOnly": true  ## <<<>>>
+                }
+
+## the bind mount mode, you should create the dir first
+[root@jenkins ~]# docker container run -itd --name bindmount --mount type=bind,source=/data,destination=/inside_container  centos:7
+docker: Error response from daemon: invalid mount config for type "bind": bind source path does not exist: /data.
+See 'docker run --help'.
+[root@jenkins ~]#
+[root@jenkins ~]# mkdir /data
+[root@jenkins ~]#
+[root@jenkins ~]# docker container run -itd --name bindmount --mount type=bind,source=/data,destination=/inside_container  centos:7
+231511f08236c8b7f5bbc92e30489a0d8a0f326044315d15c5f46981acffeaf1
+[root@jenkins ~]#
+[root@jenkins ~]# docker exec -it bindmount /bin/bash
+[root@231511f08236 /]# df -h | grep -i insid
+/dev/mapper/cl_192-root   46G   18G   28G  39% /inside_container
+[root@231511f08236 /]#
+
+```
+
+![alt text](image-226.png)
+
+![alt text](image-227.png)
+
+![alt text](image-228.png)
 
 **Docker Compose:**
 
