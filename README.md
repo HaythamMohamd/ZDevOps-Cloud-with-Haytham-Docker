@@ -1356,6 +1356,127 @@ See 'docker run --help'.
 
 **Docker Compose:**
 
+```bash
+
+docker run -d --name redis redis
+docker run -d --name db postgres
+docker run -d --name vote -p 5000:80 --link redis:redis voting-app
+docker run -d --name vote -p 5001:80 --link db:db result-app
+docker run -d --name worker --link redis:redis --link db:db worker
+
+# first docker compose file
+
+redis:
+  image: redis
+db:
+  image: postgre:9.4
+vote:
+  image: voting-app
+  ports:
+    - 5000:80
+  links:
+    - redis
+result:
+  image: result-app
+  ports:
+    - 5001:80
+  links:
+    - db
+worker:
+  image: worker
+  links:
+ - redis
+ - db
+
+# build the customized images
+redis:
+  image: redis
+db:
+  image: postgre:9.4
+vote:
+  build: ./vote
+  ports:
+    - 5000:80
+  links:
+    - redis
+result:
+  build: ./result
+  ports:
+    - 5001:80
+  links:
+    - db
+worker:
+  build: ./worker
+  links:
+ - redis
+ - db
+
+
+# docker compose with v2
+# build the customized images
+redis:
+  image: redis
+  networks:
+    - backend
+db:
+  image: postgre:9.4
+  networks:
+    - backend
+vote:
+  build: ./vote
+  networks:
+    - frontend
+    - backend
+result:
+  build: ./result
+  networks:
+    - frontend
+    - backend
+worker:
+  build: ./worker
+  networks:
+    - frontend
+    - backend
+
+
+```
+
+![alt text](image-229.png)
+
+![alt text](image-230.png)
+
+![alt text](image-231.png)
+
+![alt text](image-232.png)
+
+![alt text](image-233.png)
+
+![alt text](image-234.png)
+
+![alt text](image-235.png)
+
+![alt text](image-236.png)
+
+![alt text](image-237.png)
+
+![alt text](image-238.png)
+
+![alt text](image-239.png)
+
+![alt text](image-240.png)
+
+![alt text](image-241.png)
+
+![alt text](image-242.png)
+
+![alt text](image-243.png)
+
+![alt text](image-244.png)
+
+![alt text](image-245.png)
+
+**Docker Compose Example for Voting Application :**
+
 ## Resources
 
 - kodeKloud: <https://learn.kodekloud.com/user/courses/docker-certified-associate-exam-course>
