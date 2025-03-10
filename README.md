@@ -885,6 +885,7 @@ sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
 ![alt text](image-173.png)
 
 **Demo - Resource Limits:**
+
 ![alt text](image-174.png)
 ![alt text](image-175.png)
 ![alt text](image-176.png)
@@ -894,6 +895,281 @@ sha256:6c8d949c009536c157e7179a62e74eab3a365e6ad4e8b35335c84f90fbffd4b3
 
 
 **Docker Network:**
+  - create network bridge type
+  - cteate two containers in this network 
+  - test ping each other 
+```bash
+[root@jenkins docker_kodekloud]# docker network create --driver bridge --subnet 192.168.1.0/24 test_network
+0d6ff82a83c8656db6be93293aba776ac29f9760923ad00eebd61bf4629f6836
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]# docker network inspect test_network
+[
+    {
+        "Name": "test_network",
+        "Id": "0d6ff82a83c8656db6be93293aba776ac29f9760923ad00eebd61bf4629f6836",
+        "Created": "2025-03-09T20:46:03.187104823+02:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "192.168.1.0/24"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+[root@jenkins docker_kodekloud]#  docker container run -itd --name container01 --network test_network centos:7
+12b7d04908a3a0bdd6362335cd73780b08f5dad79b1d5479f3e0d94f40926f41
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]#  docker container run -itd --name container02 --network test_network centos:7
+5638d4ab7c406207560b4cb7e97de3c3d3576c14e96243b52a135851c39d1130
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]# docker exec -it container01 ping container02
+PING container02 (192.168.1.3) 56(84) bytes of data.
+64 bytes from container02.test_network (192.168.1.3): icmp_seq=1 ttl=64 time=0.420 ms
+64 bytes from container02.test_network (192.168.1.3): icmp_seq=2 ttl=64 time=0.179 ms
+^C
+--- container02 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.179/0.299/0.420/0.121 ms
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]# docker exec -it container01 cat /etc/resolv.conf
+search localdomain
+nameserver 127.0.0.11
+options ndots:0
+[root@jenkins docker_kodekloud]# docker network rm test_network
+Error response from daemon: error while removing network: network test_network id 0d6ff82a83c8656db6be93293aba776ac29f9760923ad00eebd61bf4629f6836 has active endpoints
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]# docker network disconnect test_network container01
+[root@jenkins docker_kodekloud]# docker network rm test_network
+Error response from daemon: error while removing network: network test_network id 0d6ff82a83c8656db6be93293aba776ac29f9760923ad00eebd61bf4629f6836 has active endpoints
+[root@jenkins docker_kodekloud]# docker network disconnect test_network container02
+[root@jenkins docker_kodekloud]#
+[root@jenkins docker_kodekloud]# docker network rm test_network
+test_network
+
+```
+
+**Networking Deep Dive - Namespaces:**
+```bash
+[root@jenkins ~]# ip netns add red
+[root@jenkins ~]# ip netns add blue
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns
+blue
+red
+[root@jenkins ~]#
+[root@jenkins ~]# ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: ens160: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 00:0c:29:c9:f1:cd brd ff:ff:ff:ff:ff:ff
+3: virbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:54:00:52:5e:0a brd ff:ff:ff:ff:ff:ff
+4: virbr0-nic: <BROADCAST,MULTICAST> mtu 1500 qdisc fq_codel state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:54:00:52:5e:0a brd ff:ff:ff:ff:ff:ff
+5: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default
+    link/ether 02:42:11:86:51:55 brd ff:ff:ff:ff:ff:ff
+432: br-119bb63962c2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default
+    link/ether 02:42:50:f0:1a:f5 brd ff:ff:ff:ff:ff:ff
+434: vethc13cdc3@if433: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-119bb63962c2 state UP mode DEFAULT group default
+    link/ether fa:8d:be:f7:40:7a brd ff:ff:ff:ff:ff:ff link-netnsid 0
+436: veth5a80bfd@if435: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-119bb63962c2 state UP mode DEFAULT group default
+    link/ether 2e:1b:72:2b:78:4d brd ff:ff:ff:ff:ff:ff link-netnsid 1
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns exec red ip link
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns exec blue ip link
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+192.168.38.1             ether   00:50:56:c0:00:08   C                     ens160
+_gateway                 ether   00:50:56:fe:a7:e5   C                     ens160
+192.168.38.254           ether   00:50:56:fd:35:99   C                     ens160
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns exec red arp
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns exec blue arp
+[root@jenkins ~]#
+[root@jenkins ~]# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    100    0        0 ens160
+192.168.10.0    0.0.0.0         255.255.255.0   U     0      0        0 br-119bb63962c2
+192.168.38.0    0.0.0.0         255.255.255.0   U     100    0        0 ens160
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns exec red route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+[root@jenkins ~]#
+[root@jenkins ~]# ip netns exec blue route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+[root@jenkins ~]#
+[root@jenkins ~]#
+
+ip netns add red
+ip netns add blue
+ip netns
+ip link
+ip netns exec red ip link
+ip netns exec blue ip link
+arp
+ip netns exec red arp
+ip netns exec blue arp
+route
+ip netns exec red route
+ip netns exec blue route
+ip link add veth-red type veth peer name veth-blue
+ip link set veth-red netns red
+ip link add veth-blue type veth peer name veth-red
+ip link set veth-blue netns blue
+ip -n red addr 192.168.15.1 dev veth-red
+ip -n red addr add 192.168.15.1 dev veth-red
+ip -n blue addr add 192.168.15.2 dev veth-blue
+ip -n red link set veth-red up
+ip -n blue link set veth-blue up
+ip netns exec red ping 192.168.15.2
+
+
+[root@jenkins ~]# ip -n red link del veth-red
+[root@jenkins ~]#
+[root@jenkins ~]# ip link add v-net-0 type bridge
+[root@jenkins ~]# ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: ens160: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 00:0c:29:c9:f1:cd brd ff:ff:ff:ff:ff:ff
+3: virbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:54:00:52:5e:0a brd ff:ff:ff:ff:ff:ff
+4: virbr0-nic: <BROADCAST,MULTICAST> mtu 1500 qdisc fq_codel state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:54:00:52:5e:0a brd ff:ff:ff:ff:ff:ff
+5: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default
+    link/ether 02:42:11:86:51:55 brd ff:ff:ff:ff:ff:ff
+432: br-119bb63962c2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default
+    link/ether 02:42:50:f0:1a:f5 brd ff:ff:ff:ff:ff:ff
+434: vethc13cdc3@if433: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-119bb63962c2 state UP mode DEFAULT group default
+    link/ether fa:8d:be:f7:40:7a brd ff:ff:ff:ff:ff:ff link-netnsid 0
+436: veth5a80bfd@if435: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-119bb63962c2 state UP mode DEFAULT group default
+    link/ether 2e:1b:72:2b:78:4d brd ff:ff:ff:ff:ff:ff link-netnsid 1
+439: v-net-0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether be:17:8f:0c:d9:b7 brd ff:ff:ff:ff:ff:ff
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# ip link add veth-red type veth peer name veth-red-br
+[root@jenkins ~]#
+[root@jenkins ~]# ip link add veth-blue type veth peer name veth-blue-br
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# ip link set veth-red netns red
+[root@jenkins ~]# ip link set veth-red-br master v-net-0
+[root@jenkins ~]# ip link set veth-blue netns blue
+[root@jenkins ~]# ip link set veth-blue-br master v-net-0
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# ip -n red addr add 192.168.15.1 dev veth-red
+[root@jenkins ~]# ip -n blue addr add 192.168.15.2 dev veth-blue
+[root@jenkins ~]#
+[root@jenkins ~]#
+[root@jenkins ~]# ip -n red link set veth-red up
+[root@jenkins ~]# ip -n blue link set veth-blue up
+[root@jenkins ~]# ping 192.168.15.1
+PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
+
+--- 192.168.15.1 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2071ms
+
+[root@jenkins ~]#
+[root@jenkins ~]# ip addr add 192.168.15.5/24 dev v-net-0
+[root@jenkins ~]# ping 192.168.15.1
+PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
+
+--- 192.168.15.1 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3058ms
+
+```
+
+![alt text](image-183.png)
+
+![alt text](image-184.png)
+
+![alt text](image-185.png)
+
+![alt text](image-186.png)
+
+![alt text](image-187.png)
+
+![alt text](image-188.png)
+
+![alt text](image-189.png)
+
+![alt text](image-190.png)
+
+![alt text](image-191.png)
+
+![alt text](image-192.png)
+
+![alt text](image-193.png)
+
+![alt text](image-194.png)
+
+![alt text](image-195.png)
+
+![alt text](image-196.png)
+
+![alt text](image-197.png)
+
+![alt text](image-198.png)
+
+![alt text](image-199.png)
+
+![alt text](image-200.png)
+
+![alt text](image-201.png)
+
+![alt text](image-202.png)
+
+![alt text](image-203.png)
+
+![alt text](image-204.png)
+
+![alt text](image-205.png)
+
+![alt text](image-206.png)
+
+![alt text](image-207.png)
+
+![alt text](image-208.png)
+
+![alt text](image-209.png)
+
+![alt text](image-210.png)
+
+![alt text](image-211.png)
+
+
+**Networking Deep Dive - Docker:**
 
 **Docker Storage:**
 
