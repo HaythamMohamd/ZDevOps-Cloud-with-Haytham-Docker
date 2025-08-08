@@ -633,9 +633,11 @@ def test():
 if __name__ == '__main__':
     app.run(debug=False,host='0.0.0.0', port=5000)
 
+## requirments.txt
 [root@jenkins python_app]# cat requirements.txt
 flask
 
+## Dockerfile
 [root@jenkins python_app]# cat Dockerfile
 FROM python:latest
 
@@ -1521,4 +1523,5 @@ worker:
 ## Resources
 
 - kodeKloud: <https://learn.kodekloud.com/user/courses/docker-certified-associate-exam-course>
+
 
