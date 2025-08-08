@@ -654,7 +654,7 @@ EXPOSE 5000
 CMD python hello.py
 
 docker build -t haytham1992/python_flask:v1 .
-docker container run -itd haytham1992/python_flask:v1
+docker container run -itd -p 4747:5000 haytham1992/python_flask:v1
 docker push  haytham1992/python_flask:v1
 ```
 **Demo - Build HTTPD image:**
@@ -1523,5 +1523,6 @@ worker:
 ## Resources
 
 - kodeKloud: <https://learn.kodekloud.com/user/courses/docker-certified-associate-exam-course>
+
 
 
