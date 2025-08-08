@@ -614,6 +614,47 @@ haytham                          latest             9cca021d25fd   12 seconds ag
 ![alt text](image-83.png)
 ![alt text](image-84.png)
 
+**Demo - Build Python with flask image  :**
+```bash
+# python code
+[root@jenkins python_app]# cat hello.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Flask Hello world'
+
+@app.route('/test')
+def test():
+    return 'testing app '
+
+if __name__ == '__main__':
+    app.run(debug=False,host='0.0.0.0', port=5000)
+
+[root@jenkins python_app]# cat requirements.txt
+flask
+
+[root@jenkins python_app]# cat Dockerfile
+FROM python:latest
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY hello.py .
+
+EXPOSE 5000
+
+CMD python hello.py
+
+docker build -t haytham1992/python_flask:v1 .
+docker container run -itd haytham1992/python_flask:v1
+docker push  haytham1992/python_flask:v1
+```
 **Demo - Build HTTPD image:**
 
 ```bash
@@ -1480,3 +1521,4 @@ worker:
 ## Resources
 
 - kodeKloud: <https://learn.kodekloud.com/user/courses/docker-certified-associate-exam-course>
+
